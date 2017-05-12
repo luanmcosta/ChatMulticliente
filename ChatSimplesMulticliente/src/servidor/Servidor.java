@@ -1,7 +1,6 @@
 package servidor;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -26,9 +25,6 @@ public class Servidor {
 
         // Socket(conexao) com o cliente
         Socket cliente;
-
-        // Declaração da mensagem
-        Mensagem mensagem;
 
         try {
             // Tentar criar conexão como servidor
@@ -58,14 +54,12 @@ public class Servidor {
         
         // Percorrer todas os clientes conectados
         for(ThreadCliente cliente : clientes){
-            // Tentar enviar mensagem
-            if(cliente.getCliente() == null)
-                continue;
             
+            // Tentar enviar mensagem
             try {
                 cliente.getSaidaDados().writeObject(msg);
             } catch (IOException ex) {
-                Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+                clientes.remove(cliente);
             }
         }
         

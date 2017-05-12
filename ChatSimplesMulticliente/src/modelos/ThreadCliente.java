@@ -1,9 +1,14 @@
 package modelos;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import servidor.Servidor;
@@ -22,6 +27,12 @@ public class ThreadCliente implements Runnable{
     
     @Override
     public void run() {
+        
+        // Auxiliares para obter hora:minuto
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        Date hora;
+        String horaString;
+     
                      
         try {
             // Realizar conexão com os canais de transmissão do cliente
@@ -30,18 +41,29 @@ public class ThreadCliente implements Runnable{
             
             // Laço infinito de requisições
             while(true){
+                if(cliente.isClosed())
+                    break;
+                
                 // Receber dados da mensagem
                 Mensagem mensagem = (Mensagem) entradaDados.readObject();
-                
+                   
                 // Imprimir requisição
                 System.out.println(mensagem.getRemetente() + ": " + mensagem.getTexto());
                 
                 // Enviar pros clientes
                 servidor.enviarParaTodos(mensagem);
+                
+                // Extrair hora
+                hora = Calendar.getInstance().getTime();
+                horaString = sdf.format(hora);
+                
+                // Salvar mensagem
+                salvarMensagem("log.txt", ("["+ horaString + "]" + mensagem.getRemetente() + ": " + mensagem.getTexto()));
 
             }         
         } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(ThreadCliente.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Um cliente se desconectou!");
+            Thread.currentThread().stop();
         }
     }   
     
@@ -79,5 +101,15 @@ public class ThreadCliente implements Runnable{
         this.saidaDados = saidaDados;
     }
  
+    public void salvarMensagem(String arquivo, String msg){
+        try {
+            FileWriter arq = new FileWriter(arquivo, true);
+            arq.write(msg);
+            arq.write(System.lineSeparator());
+            arq.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ThreadCliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
 }

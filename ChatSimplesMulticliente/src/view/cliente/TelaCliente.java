@@ -70,6 +70,7 @@ public class TelaCliente extends javax.swing.JFrame {
         btnEnviar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jtaMensagens.setColumns(20);
         jtaMensagens.setRows(5);
@@ -158,6 +159,7 @@ public class TelaCliente extends javax.swing.JFrame {
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
         iniciarCaixaMensagem();
+        btnSair.setEnabled(false);
     }//GEN-LAST:event_btnSairActionPerformed
 
     /**
@@ -202,7 +204,7 @@ public class TelaCliente extends javax.swing.JFrame {
     
     // Atualizar tela de mensagens
     public void atualizarCaixaMensagem(String msg){
-        this.jtaMensagens.setText(jtaMensagens.getText() + "\n" + msg);
+        this.jtaMensagens.setText(jtaMensagens.getText() + msg + "\n");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
